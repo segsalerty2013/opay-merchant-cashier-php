@@ -14,7 +14,7 @@ class MerchantCashierTest extends TestCase
         parent::setUp();
         $this->merchantCashier = new MerchantCashier(
             "http://xxxxxxxxxxxxxxx.com",
-            "xxxxxxxxxxxx",
+            "xxxxxxxxxxxxxxxx",
             "xxxxxxxxxxxxx",
             "XXXXXXXXXXXXX");
     }

@@ -20,6 +20,10 @@
         }
     },
     "minimum-stability": "stable",
+    "license": "ISC",
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
     "require": {
         "php": ">=7.1",
         "guzzlehttp/guzzle": "~6.0",

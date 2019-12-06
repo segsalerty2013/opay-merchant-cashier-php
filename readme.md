@@ -1,5 +1,7 @@
 ## Opay Merchant Cashier
 
+![](https://github.com/actions/opay-merchant-cashier-php/workflows/.github/workflows/php.yml/badge.svg)
+
 Merchant Pre-Order API (For onboarded OPay merchants only)
 
 ### Installation:
