@@ -1,6 +1,6 @@
 {
     "name": "opay/merchant-cashier-php",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Merchant Pre-Order API",
     "type": "library",
     "authors": [
