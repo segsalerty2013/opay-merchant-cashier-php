@@ -9,6 +9,11 @@ Merchant Pre-Order API (For onboarded OPay merchants only)
 $ composer require opay/merchant-cashier-php
 ```
 
+### Examples:
+
+- `example` folder
+- `http_example` folder
+
 #### Setup:
 You need the following initialized
 ```php
