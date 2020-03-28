@@ -76,4 +76,21 @@ class OrderRequest implements \JsonSerializable
             'returnUrl'=> $this->returnUrl
         ];
     }
+
+    /**
+     * @return array
+     */
+    public function getPayMethods(): array
+    {
+        return $this->payMethods;
+    }
+
+    /**
+     * @param array $payMethods
+     */
+    public function setPayMethods(array $payMethods): void
+    {
+        $this->payMethods = $payMethods;
+    }
+
 }
