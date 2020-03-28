@@ -93,4 +93,167 @@ class OrderRequest implements \JsonSerializable
         $this->payMethods = $payMethods;
     }
 
+    /**
+     * @return string
+     */
+    public function getProductDesc(): string
+    {
+        return $this->productDesc;
+    }
+
+    /**
+     * @param string $productDesc
+     */
+    public function setProductDesc(string $productDesc): void
+    {
+        $this->productDesc = $productDesc;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPayChannels(): array
+    {
+        return $this->payChannels;
+    }
+
+    /**
+     * @param array $payChannels
+     */
+    public function setPayChannels(array $payChannels): void
+    {
+        $this->payChannels = $payChannels;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPayAmount()
+    {
+        return $this->payAmount;
+    }
+
+    /**
+     * @param mixed $payAmount
+     */
+    public function setPayAmount(string $payCurrency, string $payAmount): void
+    {
+        $this->payAmount = json_decode(json_encode([
+            'value'=> $payAmount,
+            'currency'=> $payCurrency
+        ]));
+    }
+
+    /**
+     * @return string
+     */
+    public function getUserMobile(): string
+    {
+        return $this->userMobile;
+    }
+
+    /**
+     * @param string $userMobile
+     */
+    public function setUserMobile(string $userMobile): void
+    {
+        $this->userMobile = $userMobile;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUserRequestIp(): string
+    {
+        return $this->userRequestIp;
+    }
+
+    /**
+     * @param string $userRequestIp
+     */
+    public function setUserRequestIp(string $userRequestIp): void
+    {
+        $this->userRequestIp = $userRequestIp;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCallbackUrl(): string
+    {
+        return $this->callbackUrl;
+    }
+
+    /**
+     * @param string $callbackUrl
+     */
+    public function setCallbackUrl(string $callbackUrl): void
+    {
+        $this->callbackUrl = $callbackUrl;
+    }
+
+    /**
+     * @return string
+     */
+    public function getReturnUrl(): string
+    {
+        return $this->returnUrl;
+    }
+
+    /**
+     * @param string $returnUrl
+     */
+    public function setReturnUrl(string $returnUrl): void
+    {
+        $this->returnUrl = $returnUrl;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMchShortName(): string
+    {
+        return $this->mchShortName;
+    }
+
+    /**
+     * @param string $mchShortName
+     */
+    public function setMchShortName(string $mchShortName): void
+    {
+        $this->mchShortName = $mchShortName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProductName(): string
+    {
+        return $this->productName;
+    }
+
+    /**
+     * @param string $productName
+     */
+    public function setProductName(string $productName): void
+    {
+        $this->productName = $productName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOrderExpireAt(): string
+    {
+        return $this->orderExpireAt;
+    }
+
+    /**
+     * @param string $orderExpireAt
+     */
+    public function setOrderExpireAt(string $orderExpireAt): void
+    {
+        $this->orderExpireAt = $orderExpireAt;
+    }
+
 }
