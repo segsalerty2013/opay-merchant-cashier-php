@@ -44,4 +44,20 @@ class OrderStatusRequest implements \JsonSerializable
         $this->orderNo = $orderNo;
     }
 
+    /**
+     * @return string
+     */
+    public function getReference(): string
+    {
+        return $this->reference;
+    }
+
+    /**
+     * @param string $reference
+     */
+    public function setReference(string $reference): void
+    {
+        $this->reference = $reference;
+    }
+
 }

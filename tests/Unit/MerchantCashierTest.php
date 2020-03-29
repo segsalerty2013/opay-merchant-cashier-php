@@ -30,14 +30,15 @@ class MerchantCashierTest extends TestCase
             "10", "+2349876543210", "0:0:0:0:0:0:0:1", "https://yourdomain/callback",
             "https://yourdomain/return", "Jerry's shop", "Apple AirPods Pro");
         $this->merchantCashier->order($_orderRequest);
-        $this->assertEquals(json_encode($_orderRequest, JSON_UNESCAPED_SLASHES), $this->merchantCashier->getCryptor()->decrypt($this->merchantCashier->getOrderData()));
+        $this->assertEquals(json_encode($_orderRequest, JSON_UNESCAPED_SLASHES),
+            json_encode($this->merchantCashier->getOrderData(), JSON_UNESCAPED_SLASHES));
 
 //        $response = $this->merchantCashier->getOrderApiResult();
 //        var_dump($response->getData());
-        return new \Opay\Result\OrderResponse($this->merchantCashier, [
+        return \Opay\Result\OrderResponse::cast(new \Opay\Result\OrderResponse(), (object)[
             'code'=> '00000',
             'message'=> 'SUCCESSFUL',
-            'data'=> [
+            'data'=> (object)[
                 'orderNo'=> '191206140094566448',//$response->getData()['orderNo'],
                 'reference'=> $_orderRequest->getReference(),
                 'cashierUrl'=> 'http://xxxxxxxxxxxx/api/cashierHome?data=7krxXPg4Ob%2B',
@@ -57,12 +58,12 @@ class MerchantCashierTest extends TestCase
      */
     public final function testOrderStatusPayload(\Opay\Result\OrderResponse $orderResponse) : void
     {
-        $orderData = $orderResponse->getData();
+        $orderData = $orderResponse->getData()->toArray();
         $this->assertIsArray($orderData);
         $_orderStatusRequest = new \Opay\Payload\OrderStatusRequest($orderData['orderNo'], $orderData['reference']);
         $this->merchantCashier->orderStatus($_orderStatusRequest);
 
-        $this->assertEquals(json_encode($_orderStatusRequest), $this->merchantCashier->getCryptor()->decrypt($this->merchantCashier->getOrderStatusData()));
+        $this->assertEquals(json_encode($_orderStatusRequest), json_encode($this->merchantCashier->getOrderStatusData()));
 
 //        $response = $this->merchantCashier->getOrderStatusApiResult();
 //        var_dump($response->getData());
@@ -75,12 +76,12 @@ class MerchantCashierTest extends TestCase
      */
     public final function testOrderClosePayload(\Opay\Result\OrderResponse $orderResponse) : void
     {
-        $orderData = $orderResponse->getData();
+        $orderData = $orderResponse->getData()->toArray();
         $this->assertIsArray($orderData);
         $_orderCloseRequest = new \Opay\Payload\OrderCloseRequest($orderData['orderNo']);
         $this->merchantCashier->orderClose($_orderCloseRequest);
 
-        $this->assertEquals(json_encode($_orderCloseRequest), $this->merchantCashier->getCryptor()->decrypt($this->merchantCashier->getOrderCloseData()));
+        $this->assertEquals(json_encode($_orderCloseRequest), json_encode($this->merchantCashier->getOrderCloseData()));
 
 //        $response = $this->merchantCashier->getOrderCloseApiResult();
 //        var_dump($response->getData());
