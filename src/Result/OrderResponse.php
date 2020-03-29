@@ -2,34 +2,35 @@
 
 namespace Opay\Result;
 
-use Opay\MerchantCashier;
-
 class OrderResponse
 {
+    public $code;
+    public $message;
+    public $data;
 
-    private $code;
-    private $message;
-    private $data;
-    private $merchantCashier;
-
-    public function __construct(MerchantCashier $merchantCashier, array $response)
+    public static function cast(OrderResponse $destination, \stdClass $source) : OrderResponse
     {
-        $this->merchantCashier = $merchantCashier;
-        if (isset($response['code'])) {
-            $this->code = $response['code'];
+        $sourceReflection = new \ReflectionObject($source);
+        $sourceProperties = $sourceReflection->getProperties();
+        foreach ($sourceProperties as $sourceProperty) {
+            $name = $sourceProperty->getName();
+            if ($name === 'data') {
+                $destination->{$name} = OrderResponseData::cast(new OrderResponseData(), $source->$name);
+            } else {
+                $destination->{$name} = $source->$name;
+            }
         }
-        if (isset($response['message'])) {
-            $this->message = $response['message'];
-        }
-        if (isset($response['data'])) {
-            $this->data = $response['data'];
-        }
+        return $destination;
+    }
+
+    public function toArray() : array {
+        return (array) $this;
     }
 
     /**
      * @return mixed
      */
-    public function getCode() : string
+    public function getCode()
     {
         return $this->code;
     }
@@ -37,25 +38,17 @@ class OrderResponse
     /**
      * @return mixed
      */
-    public function getMessage() : string
+    public function getMessage()
     {
         return $this->message;
     }
 
     /**
-     * @return mixed
+     * @return OrderResponseData
      */
-    public function getData() : array
+    public function getData() : OrderResponseData
     {
-        if (is_array($this->data)) {
-            return $this->data;
-        }
-        if (strlen($this->data) > 10) {
-            // decrypt the data
-            $decrypted = $this->merchantCashier->getCryptor()->decrypt($this->data);
-            return json_decode($decrypted, true);
-        }
-        return [];
+        return $this->data;
     }
 
 }

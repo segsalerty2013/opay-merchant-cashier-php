@@ -9,38 +9,37 @@ class OrderRequest implements \JsonSerializable
     private $payMethods;
     private $reference;
     private $productDesc;
-    private $payChannels;
-    private $payAmount;
-    private $userMobile;
+    private $payTypes;
+    private $amount;
+    private $currency;
+    private $userPhone;
     private $userRequestIp;
     private $callbackUrl;
     private $returnUrl;
     private $mchShortName;
     private $productName;
-    private $orderExpireAt;
+    private $expireAt;
 
     public function __construct(array $paymentMethods, string $reference,
                                 string $productDesc, array $payChannels,
                                 string $payCurrency, string $payAmount,
-                                string $userMobile, string $userRequestIp,
+                                string $userPhone, string $userRequestIp,
                                 string $callbackUrl, string $returnUrl,
                                 string $mchShortName, string $productName)
     {
         $this->payMethods = $paymentMethods;
         $this->reference = $reference;
         $this->productDesc = $productDesc;
-        $this->payChannels = $payChannels;
-        $this->payAmount = json_decode(json_encode([
-            'value'=> $payAmount,
-            'currency'=> $payCurrency
-        ]));
-        $this->userMobile = $userMobile;
+        $this->payTypes = $payChannels;
+        $this->amount = $payAmount;
+        $this->currency = $payCurrency;
+        $this->userPhone = $userPhone;
         $this->userRequestIp = $userRequestIp;
         $this->callbackUrl = $callbackUrl;
         $this->returnUrl = $returnUrl;
         $this->mchShortName = $mchShortName;
         $this->productName = $productName;
-        $this->orderExpireAt = (string) OpayConstants::ORDER_EXPIRY;
+        $this->expireAt = (string) OpayConstants::ORDER_EXPIRY;
     }
 
     /**
@@ -62,16 +61,16 @@ class OrderRequest implements \JsonSerializable
     {
         return [
             'payMethods'=> $this->payMethods,
-            'payChannels'=> $this->payChannels,
+            'payTypes'=> $this->payTypes,
             'userRequestIp'=> $this->userRequestIp,
-            'orderExpireAt'=> $this->orderExpireAt,
+            'expireAt'=> $this->expireAt,
             'mchShortName'=> $this->mchShortName,
             'productName'=> $this->productName,
             'reference'=> $this->reference,
             'productDesc'=> $this->productDesc,
-            'payAmount'=> $this->payAmount,
-            'userMobile'=> $this->userMobile,
-            'currency'=> $this->payAmount->currency,
+            'amount'=> $this->amount,
+            'userPhone'=> $this->userPhone,
+            'currency'=> $this->currency,
             'callbackUrl'=> $this->callbackUrl,
             'returnUrl'=> $this->returnUrl
         ];
@@ -112,52 +111,49 @@ class OrderRequest implements \JsonSerializable
     /**
      * @return array
      */
-    public function getPayChannels(): array
+    public function getPayTypes(): array
     {
-        return $this->payChannels;
+        return $this->payTypes;
     }
 
     /**
-     * @param array $payChannels
+     * @param array $payTypes
      */
-    public function setPayChannels(array $payChannels): void
+    public function setPayTypes(array $payTypes): void
     {
-        $this->payChannels = $payChannels;
+        $this->payTypes = $payTypes;
     }
 
     /**
      * @return mixed
      */
-    public function getPayAmount()
+    public function getAmount()
     {
-        return $this->payAmount;
+        return $this->amount;
     }
 
     /**
      * @param mixed $payAmount
      */
-    public function setPayAmount(string $payCurrency, string $payAmount): void
+    public function setAmount(string $payAmount): void
     {
-        $this->payAmount = json_decode(json_encode([
-            'value'=> $payAmount,
-            'currency'=> $payCurrency
-        ]));
+        $this->amount = $payAmount;
     }
 
     /**
      * @return string
      */
-    public function getUserMobile(): string
+    public function getUserPhone(): string
     {
-        return $this->userMobile;
+        return $this->userPhone;
     }
 
     /**
-     * @param string $userMobile
+     * @param string $userPhone
      */
-    public function setUserMobile(string $userMobile): void
+    public function setUserPhone(string $userPhone): void
     {
-        $this->userMobile = $userMobile;
+        $this->userPhone = $userPhone;
     }
 
     /**
@@ -243,17 +239,33 @@ class OrderRequest implements \JsonSerializable
     /**
      * @return string
      */
-    public function getOrderExpireAt(): string
+    public function getExpireAt(): string
     {
-        return $this->orderExpireAt;
+        return $this->expireAt;
     }
 
     /**
-     * @param string $orderExpireAt
+     * @param string $expireAt
      */
-    public function setOrderExpireAt(string $orderExpireAt): void
+    public function setExpireAt(string $expireAt): void
     {
-        $this->orderExpireAt = $orderExpireAt;
+        $this->expireAt = $expireAt;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrency(): string
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @param string $currency
+     */
+    public function setCurrency(string $currency): void
+    {
+        $this->currency = $currency;
     }
 
 }

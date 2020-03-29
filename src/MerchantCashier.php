@@ -8,101 +8,97 @@ use Opay\Payload\OrderCloseRequest;
 use Opay\Payload\OrderRequest;
 use Opay\Payload\OrderStatusRequest;
 use Opay\Result\OrderResponse;
-use Opay\Utility\AesCipher;
 
 class MerchantCashier
 {
 
     private $merchantId;
 
-    private $cryptor;
     private $orderData;
     private $orderStatusData;
     private $orderCloseData;
 
     private $networkClient;
 
-    public function __construct(string $environmentBaseUrl, string $aesIv, string $aesKey, string $merchantId) {
+    private $publicKey;
+    private $privateKey;
+
+    public function __construct(string $environmentBaseUrl, string $pbKey, string $pvKey, string $merchantId) {
         $this->merchantId = $merchantId;
-        $this->cryptor =  new AesCipher($aesIv, $aesKey);
+        $this->publicKey = $pbKey;
+        $this->privateKey = $pvKey;
         $this->networkClient = new Client([
             'base_uri'=> $environmentBaseUrl
         ]);
     }
 
-    public final function order(OrderRequest $order) {
-        $this->orderData = $this->cryptor->encrypt(json_encode($order, JSON_UNESCAPED_SLASHES));
+    public final function order(OrderRequest $order) : void {
+        $this->orderData = $order;
     }
 
-    public final function orderStatus(OrderStatusRequest $orderStatus) {
-        $this->orderStatusData = $this->cryptor->encrypt(json_encode($orderStatus));
+    public final function orderStatus(OrderStatusRequest $orderStatus) : void {
+        $this->orderStatusData = $orderStatus;
     }
 
-    public final function orderClose(OrderCloseRequest $orderClose) {
-        $this->orderCloseData = $this->cryptor->encrypt(json_encode($orderClose));
+    public final function orderClose(OrderCloseRequest $orderClose) : void {
+        $this->orderCloseData = $orderClose;
     }
 
     public final function getOrderApiResult() : ?OrderResponse {
-        $response = $this->networkClient->post("/api/cashier/order", [
-            RequestOptions::JSON => [
-                'data' => $this->orderData,
-                'merchantId' => $this->merchantId
-            ]
-        ]);
-        $_resp = json_decode($response->getBody()->getContents(), true);
-        return new OrderResponse($this, $_resp);
+        $response = $this->networkClient->post('/api/v3/cashier/initialize', [
+                RequestOptions::JSON=> $this->orderData,
+                RequestOptions::HEADERS=> [
+                    'Authorization'=> 'Bearer '.$this->publicKey,
+                    'MerchantId'=> $this->merchantId
+                ]
+            ]);
+        return OrderResponse::cast(new OrderResponse(), json_decode($response->getBody()->getContents(), false));
     }
 
     public final function getOrderStatusApiResult() : ?OrderResponse {
-        $response = $this->networkClient->post("/api/cashier/merchantOrderStatus", [
-            RequestOptions::JSON => [
-                'data' => $this->orderStatusData,
-                'merchantId' => $this->merchantId
+        $_signature = hash_hmac('sha512', json_encode($this->orderStatusData) , $this->privateKey);
+        $response = $this->networkClient->post("/api/v3/cashier/status", [
+            RequestOptions::JSON=> $this->orderStatusData,
+            RequestOptions::HEADERS=> [
+                'Authorization'=> 'Bearer '.$_signature,
+                'MerchantId'=> $this->merchantId
             ]
         ]);
-        $_resp = json_decode($response->getBody()->getContents(), true);
-        return new OrderResponse($this, $_resp);
+        return OrderResponse::cast(new OrderResponse(), json_decode($response->getBody()->getContents(), false));
     }
 
     public final function getOrderCloseApiResult() : ?OrderResponse {
-        $response = $this->networkClient->post("/api/cashier/merchantCloseOrder", [
-            RequestOptions::JSON => [
-                'data' => $this->orderCloseData,
-                'merchantId' => $this->merchantId
+        $_signature = hash_hmac('sha512', $this->orderCloseData , $this->privateKey);
+        $response = $this->networkClient->post("/api/v3/cashier/close", [
+            RequestOptions::JSON=> $this->orderCloseData,
+            RequestOptions::HEADERS=> [
+                'Authorization'=> 'Bearer '.$_signature,
+                'MerchantId'=> $this->merchantId
             ]
         ]);
-        $_resp = json_decode($response->getBody()->getContents(), true);
-        return new OrderResponse($this, $_resp);
+        return OrderResponse::cast(new OrderResponse(), json_decode($response->getBody()->getContents(), false));
     }
 
     /**
-     * @return AES
+     * @return OrderRequest
      */
-    public final function getCryptor(): AesCipher
-    {
-        return $this->cryptor;
-    }
-
-    /**
-     * @return string
-     */
-    public final function getOrderData() : string
+    public final function getOrderData() : OrderRequest
     {
         return $this->orderData;
     }
 
     /**
-     * @return string
+     * @return OrderStatusRequest
      */
-    public final function getOrderStatusData() : string
+    public final function getOrderStatusData() : OrderStatusRequest
     {
         return $this->orderStatusData;
     }
 
     /**
-     * @return string
+     * @return OrderCloseRequest
      */
-    public final function getOrderCloseData() : string
+    public final function getOrderCloseData() : OrderCloseRequest
     {
         return $this->orderCloseData;
     }
