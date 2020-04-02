@@ -6,9 +6,10 @@ class OrderCloseRequest implements \JsonSerializable
 {
     private $orderNo;
 
-    public function __construct(string $orderNo)
+    public function __construct(string $orderNo, string $reference)
     {
         $this->orderNo = $orderNo;
+        $this->reference = $reference;
     }
 
     /**
@@ -21,7 +22,8 @@ class OrderCloseRequest implements \JsonSerializable
     public function jsonSerialize() : array
     {
         return [
-            'orderNo'=> $this->orderNo
+            'orderNo'=> $this->orderNo,
+            'reference'=> $this->reference
         ];
     }
 
@@ -39,6 +41,22 @@ class OrderCloseRequest implements \JsonSerializable
     public function setOrderNo(string $orderNo): void
     {
         $this->orderNo = $orderNo;
+    }
+
+    /**
+     * @return string
+     */
+    public function getReference(): string
+    {
+        return $this->reference;
+    }
+
+    /**
+     * @param string $reference
+     */
+    public function setReference(string $reference): void
+    {
+        $this->reference = $reference;
     }
 
 }

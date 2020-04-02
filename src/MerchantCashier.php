@@ -68,7 +68,7 @@ class MerchantCashier
     }
 
     public final function getOrderCloseApiResult() : ?OrderResponse {
-        $_signature = hash_hmac('sha512', $this->orderCloseData , $this->privateKey);
+        $_signature = hash_hmac('sha512', json_encode($this->orderCloseData) , $this->privateKey);
         $response = $this->networkClient->post("/api/v3/cashier/close", [
             RequestOptions::JSON=> $this->orderCloseData,
             RequestOptions::HEADERS=> [
