@@ -78,7 +78,7 @@ class MerchantCashierTest extends TestCase
     {
         $orderData = $orderResponse->getData()->toArray();
         $this->assertIsArray($orderData);
-        $_orderCloseRequest = new \Opay\Payload\OrderCloseRequest($orderData['orderNo']);
+        $_orderCloseRequest = new \Opay\Payload\OrderCloseRequest($orderData['orderNo'], $orderData['reference']);
         $this->merchantCashier->orderClose($_orderCloseRequest);
 
         $this->assertEquals(json_encode($_orderCloseRequest), json_encode($this->merchantCashier->getOrderCloseData()));
