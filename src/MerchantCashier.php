@@ -23,13 +23,24 @@ class MerchantCashier
     private $publicKey;
     private $privateKey;
 
-    public function __construct(string $environmentBaseUrl, string $pbKey, string $pvKey, string $merchantId) {
+    private $proxyAddress;
+
+    public function __construct(string $environmentBaseUrl, string $pbKey, string $pvKey,
+                                string $merchantId, ?array $proxyAddress = null) {
         $this->merchantId = $merchantId;
         $this->publicKey = $pbKey;
         $this->privateKey = $pvKey;
         $this->networkClient = new Client([
             'base_uri'=> $environmentBaseUrl
         ]);
+        $this->proxyAddress = $proxyAddress;
+    }
+
+    private function buildRequestOptions(array $options) : array {
+        if ($this->proxyAddress) {
+            $options[RequestOptions::PROXY] = $this->proxyAddress;
+        }
+        return $options;
     }
 
     public final function order(OrderRequest $order) : void {
@@ -45,37 +56,37 @@ class MerchantCashier
     }
 
     public final function getOrderApiResult() : ?OrderResponse {
-        $response = $this->networkClient->post('/api/v3/cashier/initialize', [
-                RequestOptions::JSON=> $this->orderData,
-                RequestOptions::HEADERS=> [
-                    'Authorization'=> 'Bearer '.$this->publicKey,
-                    'MerchantId'=> $this->merchantId
-                ]
-            ]);
+        $response = $this->networkClient->post('/api/v3/cashier/initialize', $this->buildRequestOptions([
+            RequestOptions::JSON=> $this->orderData,
+            RequestOptions::HEADERS=> [
+                'Authorization'=> 'Bearer '.$this->publicKey,
+                'MerchantId'=> $this->merchantId
+            ]
+        ]));
         return OrderResponse::cast(new OrderResponse(), json_decode($response->getBody()->getContents(), false));
     }
 
     public final function getOrderStatusApiResult() : ?OrderResponse {
         $_signature = hash_hmac('sha512', json_encode($this->orderStatusData) , $this->privateKey);
-        $response = $this->networkClient->post("/api/v3/cashier/status", [
+        $response = $this->networkClient->post("/api/v3/cashier/status",$this->buildRequestOptions([
             RequestOptions::JSON=> $this->orderStatusData,
             RequestOptions::HEADERS=> [
                 'Authorization'=> 'Bearer '.$_signature,
                 'MerchantId'=> $this->merchantId
             ]
-        ]);
+        ]));
         return OrderResponse::cast(new OrderResponse(), json_decode($response->getBody()->getContents(), false));
     }
 
     public final function getOrderCloseApiResult() : ?OrderResponse {
         $_signature = hash_hmac('sha512', json_encode($this->orderCloseData) , $this->privateKey);
-        $response = $this->networkClient->post("/api/v3/cashier/close", [
+        $response = $this->networkClient->post("/api/v3/cashier/close", $this->buildRequestOptions([
             RequestOptions::JSON=> $this->orderCloseData,
             RequestOptions::HEADERS=> [
                 'Authorization'=> 'Bearer '.$_signature,
                 'MerchantId'=> $this->merchantId
             ]
-        ]);
+        ]));
         return OrderResponse::cast(new OrderResponse(), json_decode($response->getBody()->getContents(), false));
     }
 
