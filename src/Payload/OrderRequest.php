@@ -25,7 +25,7 @@ class OrderRequest implements \JsonSerializable
                                 string $payCurrency, string $payAmount,
                                 string $userPhone, string $userRequestIp,
                                 string $callbackUrl, string $returnUrl,
-                                string $mchShortName, string $productName)
+                                string $mchShortName, string $productName, int $expireAt = 0)
     {
         $this->payMethods = $paymentMethods;
         $this->reference = $reference;
@@ -39,7 +39,12 @@ class OrderRequest implements \JsonSerializable
         $this->returnUrl = $returnUrl;
         $this->mchShortName = $mchShortName;
         $this->productName = $productName;
-        $this->expireAt = (string) OpayConstants::ORDER_EXPIRY;
+        if ($expireAt) {
+            $this->expireAt = (string) $expireAt;
+        } else {
+            // use the default
+            $this->expireAt = (string) OpayConstants::ORDER_EXPIRY;
+        }
     }
 
     /**
