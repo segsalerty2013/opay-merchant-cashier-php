@@ -1,6 +1,5 @@
 <?php
-require_once('./vendor/autoload.php');
-require_once('init.php');
+require_once('../init.php');
 
 use Opay\Payload\OrderStatusRequest;
 

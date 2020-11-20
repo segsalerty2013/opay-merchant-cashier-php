@@ -1,25 +1,27 @@
 <?php
-require_once('./vendor/autoload.php');
-require_once('init.php');
+require_once('../init.php');
 
 use Opay\Payload\OrderRequest;
 use Opay\Utility\OpayConstants;
 
-$reference = "test_20196659118854400";
-
-$_orderRequest = new OrderRequest([OpayConstants::PAYMENT_CHANNEL_BALANCE_PAYMENT, OpayConstants::PAYMENT_CHANNEL_BONUS_PAYMENT], $reference,
-    "WOW. The best wireless earphone in history. Cannot agree more! Right!", [OpayConstants::PAYMENT_METHODS_ACCOUNT, OpayConstants::PAYMENT_METHODS_QRCODE], OpayConstants::CURRENCY_NAIRA,
-    "100", "+2349876543210", getUserIP(), "http://a7384c7d.ngrok.io/callback.php",
-    "http://a7384c7d.ngrok.io/order_status.php", "Jerry's shop", "Apple AirPods Pro");
+$_orderRequest = new OrderRequest(
+    [OpayConstants::PAYMENT_METHODS_ACCOUNT, OpayConstants::PAYMENT_METHODS_QRCODE, OpayConstants::PAYMENT_METHODS_BANK_CARD, OpayConstants::PAYMENT_METHODS_BANK_ACCOUNT], $reference,
+    "WOW. The best wireless earphone in history. Cannot agree more! Right!",
+    [OpayConstants::PAYMENT_CHANNEL_BALANCE_PAYMENT, OpayConstants::PAYMENT_CHANNEL_BONUS_PAYMENT, OpayConstants::PAYMENT_CHANNEL_O_WEALTH_PAYMENT],
+    OpayConstants::CURRENCY_NAIRA,
+    "100", "+2348036952110", getUserIP(), $hostBaseUrl."/accept_payment/callback.php",
+    $hostBaseUrl."/accept_payment/order_status.php", "Jerry's shop", "Apple AirPods Pro");
 
 $merchantCashier->order($_orderRequest);
 
 $response = $merchantCashier->getOrderApiResult();
 
-echo "status : ". $response->getCode(). "<br/>";
-
+dump("status : ". $response->getCode());
 if($response->getCode() === "00000") {
-    var_dump($response->getData());
+    $_SESSION['orderNumberInSession'] = $response->getData()->getOrderNo();
+    dump($response->getData());
+} else {
+    dump($response);
 }
 
 function getUserIP() {
@@ -42,5 +44,5 @@ function getUserIP() {
      $ipaddress = 'UNKNOWN';
     return $ipaddress;
 }
-?>
+
 
